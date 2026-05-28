@@ -11,11 +11,10 @@ Lyngarr's Wandering Pets is a simple mod that lets your tamed pets roam freely w
 
 ### Configuration
 
-The mod now generates `config/lyngarrwanderingpets.properties` on first launch.
+As of 2.1.0, you can change which pets are able to wander via the `wanderable_mobs` field in the `lyngarrwanderingpets.properties` file in the config folder.
+The default value is `wanderable_mobs=minecraft:parrot,minecraft:cat,minecraft:wolf`. You can safely remove any pet from the default ones, but adding any will most likely break things, do so at your own risk.
 
-- `modifiable_mobs` is a comma-separated whitelist of entity IDs that the mod is allowed to modify.
-- By default, it includes the vanilla pets that are known to work safely with the wandering/following logic.
-- If you want to support another tameable mob, add its entity ID here; if a mob is not whitelisted, the mod leaves it untouched.
+---
 
 This mod is **server-side**, meaning you can install it on a server without requiring players to have Fabric or any additional mods. It also works perfectly in singleplayer.
 
