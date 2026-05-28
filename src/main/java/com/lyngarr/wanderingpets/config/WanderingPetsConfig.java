@@ -3,13 +3,13 @@ package com.lyngarr.wanderingpets.config;
 import com.lyngarr.wanderingpets.LyngarrWanderingPets;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Properties;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.fabricmc.loader.api.FabricLoader;
@@ -43,6 +43,11 @@ public final class WanderingPetsConfig {
 
         Path configFile = FabricLoader.getInstance().getConfigDir().resolve(FILE_NAME);
         Properties properties = new Properties();
+
+        ensureConfigDirectory(configFile);
+        if (!Files.exists(configFile)) {
+            save(configFile);
+        }
 
         if (Files.exists(configFile)) {
             try (InputStream inputStream = Files.newInputStream(configFile)) {
@@ -104,15 +109,27 @@ public final class WanderingPetsConfig {
         return parsed;
     }
 
-    private static void save(Path configFile) {
-        Properties properties = new Properties();
-        properties.setProperty(PROPERTY_KEY, String.join(",", wanderableMobs));
+    private static void ensureConfigDirectory(Path configFile) {
+        Path parent = configFile.getParent();
+        if (parent == null) {
+            return;
+        }
 
         try {
-            Files.createDirectories(configFile.getParent());
-            try (OutputStream outputStream = Files.newOutputStream(configFile)) {
-                properties.store(outputStream, "Lyngarr's Wandering Pets config");
-            }
+            Files.createDirectories(parent);
+        } catch (IOException exception) {
+            LOGGER.warn("Failed to create config directory for {}", FILE_NAME, exception);
+        }
+    }
+
+    private static void save(Path configFile) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("#Lyngarr's Wandering Pets config").append(System.lineSeparator());
+        sb.append("wanderable_mobs=").append(String.join(",", wanderableMobs)).append(System.lineSeparator());
+
+        ensureConfigDirectory(configFile);
+        try {
+            Files.writeString(configFile, sb.toString(), StandardCharsets.UTF_8);
         } catch (IOException exception) {
             LOGGER.warn("Failed to write {}, keeping in-memory defaults", FILE_NAME, exception);
         }
