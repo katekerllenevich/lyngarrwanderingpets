@@ -124,8 +124,11 @@ public final class WanderingPetsConfig {
 
     private static void save(Path configFile) {
         StringBuilder sb = new StringBuilder();
-        sb.append("#Lyngarr's Wandering Pets config").append(System.lineSeparator());
-        sb.append("wanderable_mobs=").append(String.join(",", wanderableMobs)).append(System.lineSeparator());
+        sb.append("#Lyngarr's Wandering Pets config")
+                .append(System.lineSeparator())
+                .append("#You can safely remove any pet from the default ones, but adding any will most likely break things, do so at your own risk.")
+                .append(System.lineSeparator())
+                .append("wanderable_mobs=").append(String.join(",", wanderableMobs)).append(System.lineSeparator());
 
         ensureConfigDirectory(configFile);
         try {
