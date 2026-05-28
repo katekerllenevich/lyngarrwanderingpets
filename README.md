@@ -9,6 +9,14 @@ Lyngarr's Wandering Pets is a simple mod that lets your tamed pets roam freely w
 - **Different dimensions support**: Each pet remembers separate home points for different dimensions (Overworld, Nether, End, etc.).
 - **Adjusted cat behavior**: The vanilla behavior of cats that make them sit on furniture is a bit nerfed while in wandering mode, otherwise they would just sit and basically never move.
 
+### Configuration
+
+The mod now generates `config/lyngarrwanderingpets.properties` on first launch.
+
+- `modifiable_mobs` is a comma-separated whitelist of entity IDs that the mod is allowed to modify.
+- By default, it includes the vanilla pets that are known to work safely with the wandering/following logic.
+- If you want to support another tameable mob, add its entity ID here; if a mob is not whitelisted, the mod leaves it untouched.
+
 This mod is **server-side**, meaning you can install it on a server without requiring players to have Fabric or any additional mods. It also works perfectly in singleplayer.
 
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-orange?logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/lyngarr-wandering-pets)

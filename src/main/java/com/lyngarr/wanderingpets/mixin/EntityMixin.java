@@ -1,6 +1,7 @@
 package com.lyngarr.wanderingpets.mixin;
 
 import com.lyngarr.wanderingpets.LyngarrWanderingPets;
+import com.lyngarr.wanderingpets.config.WanderingPetsConfig;
 import com.lyngarr.wanderingpets.util.WanderingAccessor;
 
 import net.minecraft.core.BlockPos;
@@ -79,6 +80,11 @@ public abstract class EntityMixin implements WanderingAccessor {
 
     @Inject(method = "saveWithoutId", at = @At("TAIL"))
     private void onWriteData(ValueOutput view, CallbackInfo ci) {
+		Entity self = (Entity) (Object) this;
+		if (!WanderingPetsConfig.isAllowedToWander(self)) {
+			return;
+		}
+
         view.putBoolean("WanderingPets_isWandering", this.wandering);
         view.putInt("WanderingPets_homeCount", this.homePosByDimension.size());
 
@@ -105,6 +111,13 @@ public abstract class EntityMixin implements WanderingAccessor {
 
     @Inject(method = "load", at = @At("TAIL"))
     private void onReadData(ValueInput view, CallbackInfo ci) {
+    Entity self = (Entity) (Object) this;
+    if (!WanderingPetsConfig.isAllowedToWander(self)) {
+      this.wandering = false;
+      this.homePosByDimension.clear();
+      return;
+    }
+
         // Default to false (following) for consistency with initial field value
         this.wandering = view.getBooleanOr("WanderingPets_isWandering", false);
         this.homePosByDimension.clear();
@@ -135,6 +148,10 @@ public abstract class EntityMixin implements WanderingAccessor {
 
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
     private void onInteract(Player player, InteractionHand hand, Vec3 hitPosition, CallbackInfoReturnable<InteractionResult> cir) {
+		if (!WanderingPetsConfig.isAllowedToWander((Entity) (Object) this)) {
+			return;
+		}
+
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastInteractionTime < 50) {
             cir.setReturnValue(InteractionResult.PASS);

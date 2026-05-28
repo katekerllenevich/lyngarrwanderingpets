@@ -1,6 +1,7 @@
 package com.lyngarr.wanderingpets.mixin;
 
 import com.lyngarr.wanderingpets.LyngarrWanderingPets;
+import com.lyngarr.wanderingpets.config.WanderingPetsConfig;
 import com.lyngarr.wanderingpets.util.WanderingAccessor;
 import java.util.EnumSet;
 import net.minecraft.core.BlockPos;
@@ -133,6 +134,10 @@ public class MobEntityMixin {
     private void syncWanderingGoals(boolean isWandering) {
         Mob self = (Mob) (Object) this;
 
+		if (!WanderingPetsConfig.isAllowedToWander(self)) {
+			return;
+		}
+
         if (self instanceof TamableAnimal tameable && tameable.isTame()) {
             if (isWandering) {
                 // Remove follow goal and add wander goal
@@ -176,6 +181,10 @@ public class MobEntityMixin {
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void onReadCustomData(ValueInput view, CallbackInfo ci) {
+		if (!WanderingPetsConfig.isAllowedToWander((Mob) (Object) this)) {
+			return;
+		}
+
         boolean isWandering = view.getBooleanOr("WanderingPets_isWandering", false);
         if (isWandering) {
             freezeTicks = 1;
@@ -186,6 +195,10 @@ public class MobEntityMixin {
     @Inject(method = "aiStep", at = @At("HEAD"))
     private void onTickMovement(CallbackInfo ci) {
         Mob self = (Mob) (Object) this;
+		if (!WanderingPetsConfig.isAllowedToWander(self)) {
+			return;
+		}
+
         WanderingAccessor accessor = (WanderingAccessor) this;
 
         if (self instanceof TamableAnimal tameable && tameable.isTame() && accessor.getWandering() && !accessor.hasHomePos()) {
